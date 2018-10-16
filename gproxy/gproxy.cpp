@@ -470,13 +470,14 @@ int main( int argc, char **argv )
 
 		CONSOLE_Print( "", false );
 		CONSOLE_Print( "  Select a battle.net server to connect to.", false );
-		CONSOLE_Print( "  Enter one of the following numbers (1-6) or enter a custom address.", false );
+		CONSOLE_Print( "  Enter one of the following numbers (1-7) or enter a custom address.", false );
 		CONSOLE_Print( "  1. US West (Lordaeron)", false );
 		CONSOLE_Print( "  2. US East (Azeroth)", false );
 		CONSOLE_Print( "  3. Asia (Kalimdor)", false );
 		CONSOLE_Print( "  4. Europe (Northrend)", false );
 		CONSOLE_Print( "  5. Public Test Realm (PTR) ", false );
 		CONSOLE_Print( "  6. EuroBattle (PvPGN) ", false );
+		CONSOLE_Print( "  7. WC3Connect (entgaming) ", false );
 
 		CONSOLE_Print( "", false );
 
@@ -498,6 +499,8 @@ int main( int argc, char **argv )
 				Server = "war3-ptr.classic.blizzard.com";
 			else if( Server == "6" || Server == "6." || Server == "eurobattle" )
 				Server = "server.eurobattle.net";
+			else if( Server == "7" || Server == "7." || Server == "wc3connect" || Server == "entgaming" )
+				Server = "connect.entgaming.net";
 		} while( Server.empty( ) );
 
 		CONSOLE_Print( "", false );
@@ -570,7 +573,14 @@ int main( int argc, char **argv )
 				out << "exeversion = 0 5 28 1" << endl;
 				out << "exeversionhash = 201 63 116 96" << endl;
 				out << "passwordhashtype = pvpgn" << endl;
-			} else
+			}
+			else if( Server == "connect.entgaming.net" )
+			{
+				out << "exeversion =" << endl;
+				out << "exeversionhash =" << endl;
+				out << "passwordhashtype = wc3connect" << endl;
+			}
+			else
 			{
 				out << "exeversion =" << endl;
 				out << "exeversionhash =" << endl;

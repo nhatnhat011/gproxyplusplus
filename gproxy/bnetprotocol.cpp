@@ -966,6 +966,24 @@ BYTEARRAY CBNETProtocol :: SEND_SID_AUTH_ACCOUNTLOGONPROOF( BYTEARRAY clientPass
 	return packet;
 }
 
+BYTEARRAY CBNETProtocol :: SEND_SID_AUTH_ACCOUNTLOGONPROOF_ENTGAMING( string password )
+{
+	BYTEARRAY packet;
+	packet.push_back( BNET_HEADER_CONSTANT );					// BNET header constant
+	packet.push_back( SID_AUTH_ACCOUNTLOGONPROOF );				// SID_AUTH_ACCOUNTLOGONPROOF
+	packet.push_back( 0 );										// packet length will be assigned later
+	packet.push_back( 0 );										// packet length will be assigned later
+
+	// empty proof indicates entgaming hash type
+	for( int i = 0; i < 20; i++ )
+		packet.push_back( 0 );
+
+	UTIL_AppendByteArrayFast( packet, password );
+	AssignLength( packet );
+
+	return packet;
+}
+
 BYTEARRAY CBNETProtocol :: SEND_SID_WARDEN( BYTEARRAY wardenResponse )
 {
 	BYTEARRAY packet;

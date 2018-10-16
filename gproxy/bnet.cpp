@@ -622,6 +622,11 @@ void CBNET :: ProcessPackets( )
 						m_BNCSUtil->HELP_PvPGNPasswordHash( m_UserPassword );
 						m_Socket->PutBytes( m_Protocol->SEND_SID_AUTH_ACCOUNTLOGONPROOF( m_BNCSUtil->GetPvPGNPasswordHash( ) ) );
 					}
+					else if( m_PasswordHashType == "wc3connect" )
+					{
+						CONSOLE_Print( "[BNET] using wc3connect logon type (for wc3connect only)" );
+						m_Socket->PutBytes( m_Protocol->SEND_SID_AUTH_ACCOUNTLOGONPROOF_ENTGAMING( m_UserPassword ) );
+					}
 					else
 					{
 						// battle.net logon
