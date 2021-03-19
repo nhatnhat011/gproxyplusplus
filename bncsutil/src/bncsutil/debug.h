@@ -26,7 +26,7 @@
 /* extern "C" { */
 /* #endif */
 
-/* #ifdef MOS_WINDOWS */
+/* #ifdef _MSC_VER */
 /* #include <windows.h> */
 /* #endif */
 
@@ -80,7 +80,7 @@
 
 /* /\* Not implemented! *\/ */
 /* MEXP(void) bncsutil_print_dump(FILE* stream, const void* data, size_t length); */
-/* #ifdef MOS_WINDOWS */
+/* #ifdef _MSC_VER */
 /* //MEXP(void) bncsutil_print_dump_win(HANDLE stream, const void* data, */
 /* //	size_t length); */
 /* #endif */

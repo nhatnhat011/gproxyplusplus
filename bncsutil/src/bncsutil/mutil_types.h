@@ -26,7 +26,7 @@
 #ifndef BNCSUTIL_MUTIL_TYPES_H_INCLUDED
 #define BNCSUTIL_MUTIL_TYPES_H_INCLUDED
 
-#ifdef WIN32
+#ifdef _MSC_VER
  #include "ms_stdint.h"
 #else
 
@@ -140,6 +140,6 @@ typedef unsigned long long      uintmax_t;
 #include <stdint.h>
 #endif
 
-#endif /* WIN32 */
+#endif /* _MSC_VER */
 
 #endif /* BNCSUTIL_MUTIL_TYPES_H_INCLUDED */

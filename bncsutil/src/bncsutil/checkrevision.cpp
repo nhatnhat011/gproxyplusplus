@@ -31,7 +31,7 @@
 #include <cstdio>
 #include <stdexcept>
 
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 #include <windows.h>
 #else
 #include <bncsutil/pe.h>
@@ -333,7 +333,7 @@ MEXP(int) getExeInfo(const char* file_name, char* exe_info,
 	unsigned long file_size;
 	FILE* f = (FILE*) 0;
 	int ret;
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 	HANDLE hFile;
 	FILETIME ft;
 	SYSTEMTIME st;
@@ -357,7 +357,7 @@ MEXP(int) getExeInfo(const char* file_name, char* exe_info,
 
 	switch (platform) {
 		case BNCSUTIL_PLATFORM_X86:
-#ifdef MOS_WINDOWS				
+#ifdef _MSC_VER
 			infoSize = GetFileVersionInfoSize(file_name, &bytesRead);
 			if (infoSize == 0)
 				return 0;
@@ -438,12 +438,12 @@ MEXP(int) getExeInfo(const char* file_name, char* exe_info,
 				fclose(f);
 				return 0;
 			}
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 			fclose(f);
 #endif
 	}
 	
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 	hFile = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, NULL,
 					   OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)

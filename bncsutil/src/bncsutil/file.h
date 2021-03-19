@@ -28,7 +28,7 @@
 
 #include <bncsutil/mutil.h>
 
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 typedef long off_t;
 #else
 #include <sys/types.h>

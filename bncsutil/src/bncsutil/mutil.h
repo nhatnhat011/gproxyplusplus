@@ -35,6 +35,7 @@
 #endif
 
 /* Specific-Sized Integers */
+#include     <stdint.h>
 #include "mutil_types.h"
 #include	 <stdlib.h>	
 
@@ -129,24 +130,24 @@
 #define MSB4(num) SWAP4(num)
 #endif /* (endianness) */
 
-#ifndef MOS_WINDOWS 
+//#ifndef _MSC_VER 
 /* attempt automatic Windows detection  */
-  #ifdef _MSC_VER 
+  //#ifdef _MSC_VER 
     /* Microsoft C++ compiler, has to be windows  */
-    #define MOS_WINDOWS 
+    /*#define _MSC_VER 
   #else 
     #if defined(_WIN) || defined(_WINDOWS) || defined(WINDOWS) || \
     defined(_WIN32) || defined(_WIN64) || defined(WIN32) || defined(WIN64)
-      #define MOS_WINDOWS
+      #define _MSC_VER
     #endif 
   #endif 
-#endif
+#endif*/
 
 #if !(defined(MUTIL_LIB_BUILD)) && defined(BNCSUTIL_EXPORTS)
 #  define MUTIL_LIB_BUILD
 #endif
 
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 #  ifdef MUTIL_LIB_BUILD
 #    if 1
 #      define MEXP(type) __declspec(dllexport) type __stdcall

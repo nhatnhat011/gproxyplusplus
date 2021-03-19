@@ -12,11 +12,11 @@ LDFLAGS = -dynamiclib -lgmp -L/opt/local/lib
 TARGET = libbncsutil.dylib
 else
 LDFLAGS = -shared -lgmp
-TARGET = libbncsutil.so
+TARGET = libbncsutil.a
 endif
 
 $(TARGET): $(CXXOBJ) $(CCOBJ)
-	$(CXX)  $(CXXFLAGS) $(LDFLAGS) $(CXXOBJ) $(CCOBJ) -o $(TARGET)
+	$(CXX)  $(CXXFLAGS) $(CXXOBJ) $(CCOBJ) -o $(TARGET) $(LDFLAGS)
 
 $(CXXOBJ): %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@ 

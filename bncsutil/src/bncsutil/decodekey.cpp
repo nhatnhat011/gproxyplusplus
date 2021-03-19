@@ -31,7 +31,7 @@
 #include <bncsutil/cdkeydecoder.h>
 #include <bncsutil/decodekey.h>
 
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 	#include <windows.h>
 #else
 	#include <pthread.h>
@@ -60,7 +60,7 @@ CDKeyDecoder** decoders;
 unsigned int numDecoders = 0;
 unsigned int sizeDecoders = 0;
 
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 //	HANDLE mutex;
 	CRITICAL_SECTION kd_control;
 #else
@@ -68,7 +68,7 @@ unsigned int sizeDecoders = 0;
 #endif
 
 int kd_lock_decoders() {
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 /*	DWORD dwWaitResult;
 	dwWaitResult = WaitForSingleObject(mutex, MUTEX_TIMEOUT_MS);
 	switch (dwWaitResult) {
@@ -104,7 +104,7 @@ int kd_lock_decoders() {
     return 1;
 }
 
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 #define kd_unlock_decoders() LeaveCriticalSection(&kd_control)
 #else
 #define kd_unlock_decoders() pthread_mutex_unlock(&mutex)
@@ -137,7 +137,7 @@ MEXP(int) kd_init() {
 	if (has_run)
 		return 1;
 	
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 	/*mutex = CreateMutex(NULL, FALSE, NULL);
 	if (mutex == NULL)
 		return 0;*/

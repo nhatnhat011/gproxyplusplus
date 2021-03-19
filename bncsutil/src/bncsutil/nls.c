@@ -29,7 +29,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include "gmp.h"
+#include <gmp.h>
 
 struct _nls {
     const char* username;
@@ -49,7 +49,7 @@ struct _nls {
 	char* M2;
 };
 
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 #  include <windows.h>
 #  if DEBUG
 #    define nls_dbg(msg) bncsutil_debug_message(msg)
@@ -645,7 +645,7 @@ MEXP(int) nls_check_signature(uint32_t address, const char* signature_raw) {
 }
     
 unsigned long nls_pre_seed() {
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
     return (unsigned long) GetTickCount();
 #else
     FILE* f;

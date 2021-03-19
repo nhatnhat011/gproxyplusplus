@@ -1,4 +1,6 @@
-# Products of VS2008
+# Products of VS
+.vs
+x64
 *.ncb
 *.suo
 *.user

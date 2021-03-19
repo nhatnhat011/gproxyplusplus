@@ -52,7 +52,10 @@ bool CBNCSUtilInterface :: HELP_SID_AUTH_CHECK( bool TFT, uint32_t war3Version, 
 {
 	// set m_EXEVersion, m_EXEVersionHash, m_EXEInfo, m_InfoROC, m_InfoTFT
 
-	string FileWar3EXE = war3Path + "Warcraft III.exe";
+	string FileWar3EXE = war3Path + "x86_64\\Warcraft III.exe";
+
+	if (!UTIL_FileExists(FileWar3EXE))
+		FileWar3EXE = war3Path + "Warcraft III.exe";
 
 	if( !UTIL_FileExists( FileWar3EXE ) )
 		FileWar3EXE = war3Path + "warcraft.exe";

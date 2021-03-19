@@ -803,22 +803,30 @@ int main( int argc, char **argv )
 					ZeroMemory( &pi, sizeof( pi ) );
 					string War3EXE;
 
-					War3EXE = War3Path + "Warcraft III.exe";
+					War3EXE = War3Path + "x86_64\\Warcraft III.exe";
 					BOOL hProcess = CreateProcessA( War3EXE.c_str( ), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str( ), LPSTARTUPINFOA( &si ), &pi );
 
+					if (!hProcess)
+					{
+						War3EXE = War3Path + "Warcraft III.exe";
+						BOOL hProcess = CreateProcessA(War3EXE.c_str(), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str(), LPSTARTUPINFOA(&si), &pi);
+					}
 					if( !hProcess )
 					{
 						War3EXE = War3Path + "war3.exe";
 						BOOL hProcess = CreateProcessA( War3EXE.c_str( ), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str( ), LPSTARTUPINFOA( &si ), &pi );
-					} else if( !hProcess )
+					} 
+					if( !hProcess )
 					{
 						War3EXE = War3Path + "warcraft.exe";
 						BOOL hProcess = CreateProcessA( War3EXE.c_str( ), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str( ), LPSTARTUPINFOA( &si ), &pi );
-					} else if( !hProcess )
+					}
+					if( !hProcess )
 					{
 						War3EXE = War3Path + "Frozen Throne.exe";
 						BOOL hProcess = CreateProcessA( War3EXE.c_str( ), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str( ), LPSTARTUPINFOA( &si ), &pi );
-					} else if( !hProcess )
+					}
+					if( !hProcess )
 					{
 						CONSOLE_Print( "[GPROXY] failed to start warcraft 3" );
 					} else
@@ -1416,7 +1424,7 @@ bool CGProxy :: Update( long usecBlock )
 						GameName = GameName.substr( 0, 31 );
 				}
 
-				m_UDPSocket->Broadcast( 6112, m_GameProtocol->SEND_W3GS_GAMEINFO( m_TFT, m_War3Version, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName( ), (*i)->GetElapsedTime( ), (*i)->GetMapPath( ), (*i)->GetMapCRC( ), 12, 12, m_Port, (*i)->GetUniqueGameID( ), (*i)->GetUniqueGameID( ) ) );
+				m_UDPSocket->Broadcast( 6112, m_GameProtocol->SEND_W3GS_GAMEINFO( m_TFT, m_War3Version, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName( ), (*i)->GetElapsedTime( ), (*i)->GetMapPath( ), (*i)->GetMapCRC( ), 24, 24, m_Port, (*i)->GetUniqueGameID( ), (*i)->GetUniqueGameID( ) ) );
 				i++;
 			}
 

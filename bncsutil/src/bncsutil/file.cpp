@@ -3,7 +3,7 @@
 #include <map>
 #include <stdexcept>
 
-#ifdef MOS_WINDOWS
+#ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #define BWIN 1
 #include <windows.h>

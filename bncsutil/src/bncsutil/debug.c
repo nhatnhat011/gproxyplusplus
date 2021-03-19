@@ -12,7 +12,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 #include <windows.h>
 #else
 #include <time.h>
@@ -21,7 +21,7 @@
 typedef struct _bncsutil_debug_env
 {
 	int enabled;
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 	HANDLE output;
 	BOOL console_was_created;
 	WORD orig_attributes;
@@ -33,7 +33,7 @@ typedef struct _bncsutil_debug_env
 
 const char default_err_msg[] = "[unknown error]";
 
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 BOOL debug_set_color(debug_env_t env, WORD color)
 {
 	return SetConsoleTextAttribute(env.output, color | env.sans_foreground);
@@ -84,7 +84,7 @@ void debug_setup_console(debug_env_t env)
 
 size_t debug_write(debug_env_t env, const char* message)
 {
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 	DWORD chars_written;
 	BOOL res;
 	if (!env.output)
@@ -99,7 +99,7 @@ size_t debug_write(debug_env_t env, const char* message)
 
 size_t get_console_width(debug_env_t env)
 {
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 	CONSOLE_SCREEN_BUFFER_INFO info;
 	if (!GetConsoleScreenBufferInfo(env.output, &info))
 		return (size_t) 0;
@@ -130,7 +130,7 @@ debug_env_t get_debug_environment()
 #endif*/
 		env->enabled = 0;
 
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 		env->output = (HANDLE) NULL;
 		//debug_setup_console(env);
 #else
@@ -159,7 +159,7 @@ MEXP(int) bncsutil_set_debug_status(int new_status)
 	if (!env) {
 		return 0;
 	}
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 	if (env->enabled && !new_status && env->console_was_created) {
 		FreeConsole();
 	} else if (!env->enabled && new_status) {
@@ -184,7 +184,7 @@ MEXP(void) bncsutil_debug_message(const char* message)
 	debug_env_t env = get_debug_environment();
 	char timestamp[12];
 	/*size_t length;*/
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 	SYSTEMTIME local_time;
 #else
 	time_t unix_time;
@@ -195,7 +195,7 @@ MEXP(void) bncsutil_debug_message(const char* message)
 		return;
 	}
 
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 	GetLocalTime(&local_time);
 	sprintf(timestamp, "[%02d:%02d:%02d] ", local_time.wHour,
 		local_time.wMinute, local_time.wSecond);
@@ -210,7 +210,7 @@ MEXP(void) bncsutil_debug_message(const char* message)
 
 
 	debug_write(env, timestamp);
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 	debug_restore_color(env);
 #endif
 	
@@ -252,12 +252,12 @@ MEXP(void) bncsutil_debug_dump(const void* data, size_t data_length)
 		on_boundary = ((i + 1) % 16 == 0);
 		
 		if ((i + 1) % 16 == 1) {
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 			debug_set_color(env, FOREGROUND_RED | FOREGROUND_BLUE |
 				FOREGROUND_INTENSITY);
 #endif
 			debug_write(env, pos_indicator);
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 			debug_restore_color(env);
 #endif
 		}
@@ -283,7 +283,7 @@ MEXP(void) bncsutil_debug_dump(const void* data, size_t data_length)
 					debug_write(env, " ");
 				}
 			}
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 			debug_set_color(env, FOREGROUND_BLUE | FOREGROUND_GREEN |
 				FOREGROUND_INTENSITY);
 #endif	
@@ -291,18 +291,18 @@ MEXP(void) bncsutil_debug_dump(const void* data, size_t data_length)
 			debug_write(env, ascii);
 			debug_write(env, "\r\n");
 			j = 2;	/* reset position in ASCII buffer */
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 			debug_set_color(env, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 #endif
 			sprintf(pos_indicator, "%04X  ", i + 1);
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 			debug_restore_color(env);
 #endif	
 		}
 	}
 }
 
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 const char* sys_error_msg()
 {
 	const char* buffer;
@@ -342,7 +342,7 @@ MEXP(void) bncsutil_print_dump(FILE* stream, const void* data, size_t length)
 	
 }
 
-#ifdef MOS_WINDOWS
+#ifdef _MSC_VER
 MEXP(void) bncsutil_print_dump_win(HANDLE stream, const void* data,
 	size_t length)
 {
