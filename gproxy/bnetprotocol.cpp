@@ -1098,6 +1098,7 @@ CIncomingGameHost :: CIncomingGameHost( uint16_t nGameType, uint16_t nParameter,
 	BYTEARRAY MapHeight;
 	BYTEARRAY MapCRC;
 	BYTEARRAY MapPath;
+	BYTEARRAY MapHash;
 	BYTEARRAY HostName;
 
 	if( StatString.size( ) >= 14 )
@@ -1114,13 +1115,16 @@ CIncomingGameHost :: CIncomingGameHost( uint16_t nGameType, uint16_t nParameter,
 		m_MapWidth = UTIL_ByteArrayToUInt16( MapWidth, false );
 		m_MapHeight = UTIL_ByteArrayToUInt16( MapHeight, false );
 		m_MapCRC = MapCRC;
-		m_MapPath = string( MapPath.begin( ), MapPath.end( ) );
+		m_MapPath = string( MapPath.begin( ), MapPath.end( ) ); 
 
 		if( StatString.size( ) >= i + 1 )
 		{
 			HostName = UTIL_ExtractCString( StatString, i );
 			m_HostName = string( HostName.begin( ), HostName.end( ) );
 		}
+		MapHash = BYTEARRAY(StatString.begin() + MapPath.size() + HostName.size() + 16,
+			StatString.begin() + MapPath.size() + HostName.size() + 36);
+		m_MapHash = MapHash;
 	}
 }
 

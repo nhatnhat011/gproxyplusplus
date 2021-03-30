@@ -196,6 +196,7 @@ private:
 	uint16_t m_MapWidth;
 	uint16_t m_MapHeight;
 	BYTEARRAY m_MapCRC;
+	BYTEARRAY m_MapHash;
 	string m_MapPath;
 	string m_HostName;
 
@@ -221,6 +222,7 @@ public:
 	uint16_t GetMapWidth( )			{ return m_MapWidth; }
 	uint16_t GetMapHeight( )		{ return m_MapHeight; }
 	BYTEARRAY GetMapCRC( )			{ return m_MapCRC; }
+	BYTEARRAY GetMapHash( )         { return m_MapHash; }
 	string GetMapPath( )			{ return m_MapPath; }
 	string GetHostName( )			{ return m_HostName; }
 };

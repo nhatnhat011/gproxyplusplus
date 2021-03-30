@@ -22,6 +22,7 @@
 #include "util.h"
 #include "config.h"
 #include "socket.h"
+#include "bonjour.h"
 #include "commandpacket.h"
 #include "bnetprotocol.h"
 #include "bnet.h"
@@ -961,6 +962,7 @@ CGProxy :: CGProxy( bool nTFT, string nWar3Path, string nCDKeyROC, string nCDKey
 	m_RemoteSocket = new CTCPClient( );
 	m_RemoteSocket->SetNoDelay( true );
 	m_UDPSocket = new CUDPSocket( );
+	m_Bonjour = new CBonjour();
 	m_UDPSocket->SetBroadcastTarget( "127.0.0.1" );
 	m_GameProtocol = new CGameProtocol( this );
 	m_GPSProtocol = new CGPSProtocol( );
@@ -1007,6 +1009,7 @@ CGProxy :: ~CGProxy( )
 	delete m_LocalSocket;
 	delete m_RemoteSocket;
 	delete m_UDPSocket;
+	delete m_Bonjour;
 	delete m_BNET;
 
 	for( vector<CIncomingGameHost *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); i++ )
@@ -1425,6 +1428,7 @@ bool CGProxy :: Update( long usecBlock )
 				}
 
 				m_UDPSocket->Broadcast( 6112, m_GameProtocol->SEND_W3GS_GAMEINFO( m_TFT, m_War3Version, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName( ), (*i)->GetElapsedTime( ), (*i)->GetMapPath( ), (*i)->GetMapCRC( ), 24, 24, m_Port, (*i)->GetUniqueGameID( ), (*i)->GetUniqueGameID( ) ) );
+				m_Bonjour->Broadcast_Info(m_TFT, m_War3Version, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName(), (*i)->GetElapsedTime(), (*i)->GetMapPath(), (*i)->GetMapCRC(), 24, 24, m_Port, (*i)->GetUniqueGameID(), (*i)->GetUniqueGameID(), (*i)->GetMapHash());
 				i++;
 			}
 

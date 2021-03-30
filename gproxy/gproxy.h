@@ -80,6 +80,7 @@ class CTCPServer;
 class CTCPSocket;
 class CTCPClient;
 class CUDPSocket;
+class CBonjour;
 class CBNET;
 class CIncomingGameHost;
 class CGameProtocol;
@@ -94,6 +95,7 @@ public:
 	CTCPSocket *m_LocalSocket;
 	CTCPClient *m_RemoteSocket;
 	CUDPSocket *m_UDPSocket;
+	CBonjour* m_Bonjour;
 	CBNET *m_BNET;
 	vector<CIncomingGameHost *> m_Games;
 	CGameProtocol *m_GameProtocol;
