@@ -108,6 +108,7 @@ public:
 	uint32_t m_TotalPacketsReceivedFromRemote;
 	bool m_Exiting;
 	bool m_TFT;
+	bool m_PTR;
 	string m_War3Path;
 	string m_CDKeyROC;
 	string m_CDKeyTFT;
@@ -137,7 +138,7 @@ public:
 	string m_JoinedName;
 	string m_HostName;
 
-	CGProxy( bool nTFT, string nWar3Path, string nCDKeyROC, string nCDKeyTFT, string nServer, string nUsername, string nPassword, string nChannel, uint32_t nWar3Version, uint16_t nPort, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType );
+	CGProxy( bool nTFT, bool nPTR, string nWar3Path, string nCDKeyROC, string nCDKeyTFT, string nServer, string nUsername, string nPassword, string nChannel, uint32_t nWar3Version, uint16_t nPort, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType );
 	~CGProxy( );
 
 	// processing functions

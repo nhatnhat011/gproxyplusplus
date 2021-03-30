@@ -326,6 +326,7 @@ int main( int argc, char **argv )
 	BYTEARRAY EXEVersion;
 	BYTEARRAY EXEVersionHash;
 	string PasswordHashType;
+	bool ptr;
 
 	if( !CFG.Exists( "war3path" ) || !CFG.Exists( "cdkeyroc" ) || !CFG.Exists( "server" ) || !CFG.Exists( "username" ) || !CFG.Exists( "password" ) || !CFG.Exists( "channel" ) )
 	{
@@ -601,6 +602,7 @@ int main( int argc, char **argv )
 		Channel = CFG.GetString( "channel", string( ) );
 		War3Version = CFG.GetInt( "war3version", War3Version );
 		Port = CFG.GetInt( "port", Port );
+		ptr = CFG.GetInt("ptr", 0) != 0;
 		EXEVersion = UTIL_ExtractNumbers( CFG.GetString( "exeversion", string( ) ), 4 );
 		EXEVersionHash = UTIL_ExtractNumbers( CFG.GetString( "exeversionhash", string( ) ), 4 );
 		PasswordHashType = CFG.GetString( "passwordhashtype", string( ) );
@@ -644,7 +646,7 @@ int main( int argc, char **argv )
 
 	// initialize gproxy
 
-	gGProxy = new CGProxy( !CDKeyTFT.empty( ), War3Path, CDKeyROC, CDKeyTFT, Server, Username, Password, Channel, War3Version, Port, EXEVersion, EXEVersionHash, PasswordHashType );
+	gGProxy = new CGProxy( !CDKeyTFT.empty( ), ptr, War3Path, CDKeyROC, CDKeyTFT, Server, Username, Password, Channel, War3Version, Port, EXEVersion, EXEVersionHash, PasswordHashType );
 
 	
 	struct timeval currTime;
@@ -954,9 +956,9 @@ int main( int argc, char **argv )
 // CGProxy
 //
 
-CGProxy :: CGProxy( bool nTFT, string nWar3Path, string nCDKeyROC, string nCDKeyTFT, string nServer, string nUsername, string nPassword, string nChannel, uint32_t nWar3Version, uint16_t nPort, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType )
+CGProxy :: CGProxy( bool nTFT, bool nPTR, string nWar3Path, string nCDKeyROC, string nCDKeyTFT, string nServer, string nUsername, string nPassword, string nChannel, uint32_t nWar3Version, uint16_t nPort, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType )
 {
-	m_Version = "Public Test Release 1.0 (March 11, 2010)";
+	m_Version = "Public Test Release 1.1 (March 31, 2021)";
 	m_LocalServer = new CTCPServer( );
 	m_LocalSocket = NULL;
 	m_RemoteSocket = new CTCPClient( );
@@ -970,6 +972,7 @@ CGProxy :: CGProxy( bool nTFT, string nWar3Path, string nCDKeyROC, string nCDKey
 	m_TotalPacketsReceivedFromRemote = 0;
 	m_Exiting = false;
 	m_TFT = nTFT;
+	m_PTR = nPTR;
 	m_War3Path = nWar3Path;
 	m_CDKeyROC = nCDKeyROC;
 	m_CDKeyTFT = nCDKeyTFT;
