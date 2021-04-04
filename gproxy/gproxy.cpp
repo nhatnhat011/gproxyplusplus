@@ -321,7 +321,7 @@ int main( int argc, char **argv )
 	string Username;
 	string Password;
 	string Channel;
-	uint32_t War3Version = 30;
+	uint32_t War3Version = 31;
 	uint16_t Port = 6125;
 	BYTEARRAY EXEVersion;
 	BYTEARRAY EXEVersionHash;
