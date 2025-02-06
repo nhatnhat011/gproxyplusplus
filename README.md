@@ -48,7 +48,9 @@ Full list of configuration keys:
 - `password`		your battle.net/PVPGN password
 - `channel`			the first channel to join after logging into battle.net/PVPGN
 - `war3version`		the Warcraft III version to connect to battle.net/PVPGN with
-- `port`			the port GProxy++ should listen for the local player on
+- `bonjour`     1 if Warcraft version using bonjour
+- `lanversion`  the Warcraft III version tto connect to LAN Game
+- `port`			  the port GProxy++ should listen for the local player on
 - `exeversion`		used with PVPGN servers
 - `exeversionhash`		used with PVPGN servers
 - `passwordhashtype`	used with PVPGN servers (set to "pvpgn" when connecting to a PVPGN server)
@@ -82,10 +84,10 @@ In the GProxy++ console:
 
 In game:
 
-- `/re <message>`		reply to the last received whisper
-- `/sc`			whispers "spoofcheck" to the game host (also: /spoof, /spoofcheck, /spoof check)
-- `/status`			show status information
-- `/w <user> <message>`	whispers <message> to <user>
+- `@re <message>`		reply to the last received whisper
+- `@sc`			whispers "spoofcheck" to the game host (also: /spoof, /spoofcheck, /spoof check)
+- `@status`			show status information
+- `@w <user> <message>`	whispers <message> to <user>
 
 
 Technical Details
