@@ -322,6 +322,8 @@ int main( int argc, char **argv )
 	string Password;
 	string Channel;
 	uint32_t War3Version = 31;
+	uint32_t LanVersion;
+	bool Bonjour = false;
 	uint16_t Port = 6125;
 	BYTEARRAY EXEVersion;
 	BYTEARRAY EXEVersionHash;
@@ -561,12 +563,22 @@ int main( int argc, char **argv )
 			if( Server == "server.eurobattle.net" )
 			{
 				out << "war3version = 28" << endl;
+				out << "lanversion = 28" << endl;
 			}else if ( Server == "war3-ptr.classic.blizzard.com" )
 			{
 				out << "war3version = 30" << endl;
+				out << "lanversion = 30" << endl;
 			} else
 			{
 				out << "war3version = " << War3Version << endl;
+				out << "lanversion = " << War3Version << endl;
+			}
+			if( CFG.GetInt( "lanversion", War3Version ) >= 31 )
+			{
+				out << "bonjour = 1" << endl;
+			} else
+			{
+				out << "bonjour = 0" << endl;
 			}
 			out << "port = " << Port << endl;
 			if( Server == "server.eurobattle.net" )
@@ -601,6 +613,8 @@ int main( int argc, char **argv )
 		Password = CFG.GetString( "password", string( ) );
 		Channel = CFG.GetString( "channel", string( ) );
 		War3Version = CFG.GetInt( "war3version", War3Version );
+		LanVersion = CFG.GetInt( "lanversion", War3Version );
+		Bonjour = CFG.GetInt("bonjour", 0) != 0;
 		Port = CFG.GetInt( "port", Port );
 		ptr = CFG.GetInt("ptr", 0) != 0;
 		EXEVersion = UTIL_ExtractNumbers( CFG.GetString( "exeversion", string( ) ), 4 );
@@ -646,7 +660,7 @@ int main( int argc, char **argv )
 
 	// initialize gproxy
 
-	gGProxy = new CGProxy( !CDKeyTFT.empty( ), ptr, War3Path, CDKeyROC, CDKeyTFT, Server, Username, Password, Channel, War3Version, Port, EXEVersion, EXEVersionHash, PasswordHashType );
+	gGProxy = new CGProxy( !CDKeyTFT.empty( ), ptr, War3Path, CDKeyROC, CDKeyTFT, Server, Username, Password, Channel, War3Version, LanVersion, Bonjour, Port, EXEVersion, EXEVersionHash, PasswordHashType );
 
 	
 	struct timeval currTime;
@@ -692,174 +706,173 @@ int main( int argc, char **argv )
 #ifdef WIN32
 			else if( c == 10 || c == 13 || c == PADENTER )
 #else
-			else if( c == 10 || c == 13 )
+			else if (c == 10 || c == 13)
 #endif
 			{
 				// cr, lf
 				// process input buffer now
 
 				string Command = gInputBuffer;
-				transform( Command.begin( ), Command.end( ), Command.begin( ), (int(*)(int))tolower );
+				transform(Command.begin(), Command.end(), Command.begin(), (int(*)(int))tolower);
 
-				if( Command == "/commands" )
+				if (Command == "/commands")
 				{
-					CONSOLE_Print( ">>> /commands" );
-					CONSOLE_Print( "", false );
-					CONSOLE_Print( "  In the GProxy++ console:", false );
-					CONSOLE_Print( "   /commands           : show command list", false );
-					CONSOLE_Print( "   /exit or /quit      : close GProxy++", false );
-					CONSOLE_Print( "   /filter <f>         : start filtering public game names for <f>", false );
-					CONSOLE_Print( "   /filteroff          : stop filtering public game names", false );
-					CONSOLE_Print( "   /game <gamename>    : look for a specific game named <gamename>", false );
-					CONSOLE_Print( "   /track <username>   : starts tracking specific username", false );
-					CONSOLE_Print( "   /trackoff           : stops tracking", false );
-					CONSOLE_Print( "   /help               : show help text", false );
-					CONSOLE_Print( "   /public             : enable listing of public games", false );
-					CONSOLE_Print( "   /publicoff          : disable listing of public games", false );
-					CONSOLE_Print( "   /r <message>        : reply to the last received whisper", false );
-					CONSOLE_Print( "   /start              : start warcraft 3", false );
-					CONSOLE_Print( "   /version            : show version text", false );
-					CONSOLE_Print( "", false );
-					CONSOLE_Print( "  In game:", false );
-					CONSOLE_Print( "   /re <message>       : reply to the last received whisper", false );
-					CONSOLE_Print( "   /sc                 : whispers \"spoofcheck\" to the game host", false );
-					CONSOLE_Print( "   /status             : show status information", false );
-					CONSOLE_Print( "   /w <user> <message> : whispers <message> to <user>", false );
-					CONSOLE_Print( "", false );
+					CONSOLE_Print(">>> /commands");
+					CONSOLE_Print("", false);
+					CONSOLE_Print("  In the GProxy++ console:", false);
+					CONSOLE_Print("   /commands           : show command list", false);
+					CONSOLE_Print("   /exit or /quit      : close GProxy++", false);
+					CONSOLE_Print("   /filter <f>         : start filtering public game names for <f>", false);
+					CONSOLE_Print("   /filteroff          : stop filtering public game names", false);
+					CONSOLE_Print("   /game <gamename>    : look for a specific game named <gamename>", false);
+					CONSOLE_Print("   /track <username>   : starts tracking specific username", false);
+					CONSOLE_Print("   /trackoff           : stops tracking", false);
+					CONSOLE_Print("   /help               : show help text", false);
+					CONSOLE_Print("   /public             : enable listing of public games", false);
+					CONSOLE_Print("   /publicoff          : disable listing of public games", false);
+					CONSOLE_Print("   /r <message>        : reply to the last received whisper", false);
+					CONSOLE_Print("   /start              : start warcraft 3", false);
+					CONSOLE_Print("   /version            : show version text", false);
+					CONSOLE_Print("", false);
+					CONSOLE_Print("  In game:", false);
+					CONSOLE_Print("   @re <message>       : reply to the last received whisper", false);
+					CONSOLE_Print("   @sc                 : whispers \"spoofcheck\" to the game host", false);
+					CONSOLE_Print("   @status             : show status information", false);
+					CONSOLE_Print("   @w <user> <message> : whispers <message> to <user>", false);
+					CONSOLE_Print("", false);
 				}
-				else if( Command == "/exit" || Command == "/quit" )
+				else if (Command == "/exit" || Command == "/quit")
 				{
 					Quit = true;
 					break;
 				}
-				else if( Command.size( ) >= 9 && Command.substr( 0, 8 ) == "/filter " )
+				else if (Command.size() >= 9 && Command.substr(0, 8) == "/filter ")
 				{
-					string Filter = gInputBuffer.substr( 8 );
+					string Filter = gInputBuffer.substr(8);
 
-					if( !Filter.empty( ) && Filter.size( ) <= 31 )
+					if (!Filter.empty() && Filter.size() <= 31)
 					{
-						gGProxy->m_BNET->SetPublicGameFilter( Filter );
-						CONSOLE_Print( "[BNET] started filtering public game names for \"" + Filter + "\"" );
+						gGProxy->m_BNET->SetPublicGameFilter(Filter);
+						CONSOLE_Print("[BNET] started filtering public game names for \"" + Filter + "\"");
 					}
 				}
-				else if( Command == "/filteroff" )
+				else if (Command == "/filteroff")
 				{
-					gGProxy->m_BNET->SetPublicGameFilter( string( ) );
-					CONSOLE_Print( "[BNET] stopped filtering public game names" );
+					gGProxy->m_BNET->SetPublicGameFilter(string());
+					CONSOLE_Print("[BNET] stopped filtering public game names");
 				}
-				else if( Command.size( ) >= 7 && Command.substr( 0, 6 ) == "/game " )
+				else if (Command.size() >= 7 && Command.substr(0, 6) == "/game ")
 				{
-					string GameName = gInputBuffer.substr( 6 );
+					string GameName = gInputBuffer.substr(6);
 
-					if( !GameName.empty( ) && GameName.size( ) <= 31 )
+					if (!GameName.empty() && GameName.size() <= 31)
 					{
-						gGProxy->m_BNET->SetSearchGameName( GameName );
-						CONSOLE_Print( "[BNET] looking for a game named \"" + GameName + "\" for up to two minutes" );
+						gGProxy->m_BNET->SetSearchGameName(GameName);
+						CONSOLE_Print("[BNET] looking for a game named \"" + GameName + "\" for up to two minutes");
 					}
 				}
-				else if( Command == "/help" )
+				else if (Command == "/help")
 				{
-					CONSOLE_Print( ">>> /help" );
-					CONSOLE_Print( "", false );
-					CONSOLE_Print( "  GProxy++ connects to battle.net and looks for games for you to join.", false );
-					CONSOLE_Print( "  If GProxy++ finds any they will be listed on the Warcraft III LAN screen.", false );
-					CONSOLE_Print( "  To join a game, simply open Warcraft III and wait at the LAN screen.", false );
-					CONSOLE_Print( "  Standard games will be white and GProxy++ enabled games will be blue.", false );
-					CONSOLE_Print( "  Note: You must type \"/public\" to enable listing of public games.", false );
-					CONSOLE_Print( "", false );
-					CONSOLE_Print( "  If you want to join a specific game, type \"/game <gamename>\".", false );
-					CONSOLE_Print( "  GProxy++ will look for that game for up to two minutes before giving up.", false );
-					CONSOLE_Print( "  This is useful for private games.", false );
-					CONSOLE_Print( "", false );
-					CONSOLE_Print( "  Please note:", false );
-					CONSOLE_Print( "  GProxy++ will join the game using your battle.net name, not your LAN name.", false );
-					CONSOLE_Print( "  Other players will see your battle.net name even if you choose another name.", false );
-					CONSOLE_Print( "  This is done so that you can be automatically spoof checked.", false );
-					CONSOLE_Print( "", false );
-					CONSOLE_Print( "  Type \"/commands\" for a full command list.", false );
-					CONSOLE_Print( "", false );
+					CONSOLE_Print(">>> /help");
+					CONSOLE_Print("", false);
+					CONSOLE_Print("  GProxy++ connects to battle.net and looks for games for you to join.", false);
+					CONSOLE_Print("  If GProxy++ finds any they will be listed on the Warcraft III LAN screen.", false);
+					CONSOLE_Print("  To join a game, simply open Warcraft III and wait at the LAN screen.", false);
+					CONSOLE_Print("  Standard games will be white and GProxy++ enabled games will be blue.", false);
+					CONSOLE_Print("  Note: You must type \"/public\" to enable listing of public games.", false);
+					CONSOLE_Print("", false);
+					CONSOLE_Print("  If you want to join a specific game, type \"/game <gamename>\".", false);
+					CONSOLE_Print("  GProxy++ will look for that game for up to two minutes before giving up.", false);
+					CONSOLE_Print("  This is useful for private games.", false);
+					CONSOLE_Print("", false);
+					CONSOLE_Print("  Please note:", false);
+					CONSOLE_Print("  GProxy++ will join the game using your battle.net name, not your LAN name.", false);
+					CONSOLE_Print("  Other players will see your battle.net name even if you choose another name.", false);
+					CONSOLE_Print("  This is done so that you can be automatically spoof checked.", false);
+					CONSOLE_Print("", false);
+					CONSOLE_Print("  Type \"/commands\" for a full command list.", false);
+					CONSOLE_Print("", false);
 				}
-				else if( Command == "/public" || Command == "/publicon" || Command == "/public on" || Command == "/list" || Command == "/liston" || Command == "/list on" )
+				else if (Command == "/public" || Command == "/publicon" || Command == "/public on" || Command == "/list" || Command == "/liston" || Command == "/list on")
 				{
-					gGProxy->m_BNET->SetListPublicGames( true );
-					CONSOLE_Print( "[BNET] listing of public games enabled" );
+					gGProxy->m_BNET->SetListPublicGames(true);
+					CONSOLE_Print("[BNET] listing of public games enabled");
 				}
-				else if( Command == "/publicoff" || Command == "/public off" || Command == "/listoff" || Command == "/list off" )
+				else if (Command == "/publicoff" || Command == "/public off" || Command == "/listoff" || Command == "/list off")
 				{
-					gGProxy->m_BNET->SetListPublicGames( false );
-					CONSOLE_Print( "[BNET] listing of public games disabled" );
+					gGProxy->m_BNET->SetListPublicGames(false);
+					CONSOLE_Print("[BNET] listing of public games disabled");
 				}
-				else if( Command.size( ) >= 4 && Command.substr( 0, 3 ) == "/r " )
+				else if (Command.size() >= 4 && Command.substr(0, 3) == "/r ")
 				{
-					if( !gGProxy->m_BNET->GetReplyTarget( ).empty( ) )
-						gGProxy->m_BNET->QueueChatCommand( gInputBuffer.substr( 3 ), gGProxy->m_BNET->GetReplyTarget( ), true );
+					if (!gGProxy->m_BNET->GetReplyTarget().empty())
+						gGProxy->m_BNET->QueueChatCommand(gInputBuffer.substr(3), gGProxy->m_BNET->GetReplyTarget(), true);
 					else
-						CONSOLE_Print( "[BNET] nobody has whispered you yet" );
+						CONSOLE_Print("[BNET] nobody has whispered you yet");
 				}
 #ifdef WIN32
-				else if( Command == "/start" )
+				else if (Command == "/start")
 				{
 					STARTUPINFO si;
 					PROCESS_INFORMATION pi;
-					ZeroMemory( &si, sizeof( si ) );
-					si.cb = sizeof( si );
-					ZeroMemory( &pi, sizeof( pi ) );
+					ZeroMemory(&si, sizeof(si));
+					si.cb = sizeof(si);
+					ZeroMemory(&pi, sizeof(pi));
 					string War3EXE;
 
 					War3EXE = War3Path + "x86_64\\Warcraft III.exe";
-					BOOL hProcess = CreateProcessA( War3EXE.c_str( ), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str( ), LPSTARTUPINFOA( &si ), &pi );
+					BOOL hProcess = CreateProcessA(War3EXE.c_str(), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str(), LPSTARTUPINFOA(&si), &pi);
 
 					if (!hProcess)
 					{
 						War3EXE = War3Path + "Warcraft III.exe";
 						BOOL hProcess = CreateProcessA(War3EXE.c_str(), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str(), LPSTARTUPINFOA(&si), &pi);
 					}
-					if( !hProcess )
+					if (!hProcess)
 					{
 						War3EXE = War3Path + "war3.exe";
-						BOOL hProcess = CreateProcessA( War3EXE.c_str( ), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str( ), LPSTARTUPINFOA( &si ), &pi );
-					} 
-					if( !hProcess )
+						BOOL hProcess = CreateProcessA(War3EXE.c_str(), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str(), LPSTARTUPINFOA(&si), &pi);
+					}
+					if (!hProcess)
 					{
 						War3EXE = War3Path + "warcraft.exe";
-						BOOL hProcess = CreateProcessA( War3EXE.c_str( ), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str( ), LPSTARTUPINFOA( &si ), &pi );
+						BOOL hProcess = CreateProcessA(War3EXE.c_str(), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str(), LPSTARTUPINFOA(&si), &pi);
 					}
-					if( !hProcess )
+					if (!hProcess)
 					{
 						War3EXE = War3Path + "Frozen Throne.exe";
-						BOOL hProcess = CreateProcessA( War3EXE.c_str( ), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str( ), LPSTARTUPINFOA( &si ), &pi );
+						BOOL hProcess = CreateProcessA(War3EXE.c_str(), NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, War3Path.c_str(), LPSTARTUPINFOA(&si), &pi);
 					}
-					if( !hProcess )
+					if (!hProcess)
 					{
-						CONSOLE_Print( "[GPROXY] failed to start warcraft 3" );
-					} else
+						CONSOLE_Print("[GPROXY] failed to start warcraft 3");
+					}
+					else
 					{
-						CONSOLE_Print( "[GPROXY] started warcraft 3" );
-						CloseHandle( pi.hProcess );
-						CloseHandle( pi.hThread );
+						CONSOLE_Print("[GPROXY] started warcraft 3");
+						CloseHandle(pi.hProcess);
+						CloseHandle(pi.hThread);
 					}
 				}
 #endif
 #ifdef __APPLE__
-                else if( Command == "/start" )
-                {
-                    string War3APP1, War3APP2;
-                    
-                    War3APP1 = "'/Applications/Warcraft III/Warcraft III.app/Contents/MacOS/Warcraft III'";
-                    War3APP2 = "'/Applications/Warcraft III/war3.app/Contents/MacOS/Warcraft III'";
-                    string command1 = "open " + War3APP1;
-                    string command2 = "open " + War3APP2;
-                    
-                    CONSOLE_Print( "[GPROXY] staring up warcraft 3..." );
-                    
-                    system(command1.c_str());
-                    system(command2.c_str());
-                }
-#endif
-				else if( Command == "/version" )
-					CONSOLE_Print( "[GPROXY] GProxy++ Version " + gGProxy->m_Version );
+				else if (Command == "/start")
+				{
+					string War3APP1, War3APP2;
 
-						
+					War3APP1 = "'/Applications/Warcraft III/Warcraft III.app/Contents/MacOS/Warcraft III'";
+					War3APP2 = "'/Applications/Warcraft III/war3.app/Contents/MacOS/Warcraft III'";
+					string command1 = "open " + War3APP1;
+					string command2 = "open " + War3APP2;
+
+					CONSOLE_Print("[GPROXY] staring up warcraft 3...");
+
+					system(command1.c_str());
+					system(command2.c_str());
+				}
+#endif
+				else if (Command == "/version")
+					CONSOLE_Print("[GPROXY] GProxy++ Version " + gGProxy->m_Version);
 				else if( Command.size( ) >= 8 && Command.substr( 0, 7 ) == "/track " )
 				{
 					gGProxy->m_BNET->trackData.active = true;
@@ -956,7 +969,7 @@ int main( int argc, char **argv )
 // CGProxy
 //
 
-CGProxy :: CGProxy( bool nTFT, bool nPTR, string nWar3Path, string nCDKeyROC, string nCDKeyTFT, string nServer, string nUsername, string nPassword, string nChannel, uint32_t nWar3Version, uint16_t nPort, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType )
+CGProxy :: CGProxy( bool nTFT, bool nPTR, string nWar3Path, string nCDKeyROC, string nCDKeyTFT, string nServer, string nUsername, string nPassword, string nChannel, uint32_t nWar3Version, uint32_t nLanVersion, bool nBonjour, uint16_t nPort, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType )
 {
 	m_Version = "Public Test Release 1.1 (March 31, 2021)";
 	m_LocalServer = new CTCPServer( );
@@ -981,6 +994,8 @@ CGProxy :: CGProxy( bool nTFT, bool nPTR, string nWar3Path, string nCDKeyROC, st
 	m_Password = nPassword;
 	m_Channel = nChannel;
 	m_War3Version = nWar3Version;
+	m_LanVersion = nLanVersion;
+	m_LANBonjour = nBonjour;
 	m_Port = nPort;
 	m_LastConnectionAttemptTime = 0;
 	m_LastRefreshTime = 0;
@@ -996,6 +1011,8 @@ CGProxy :: CGProxy( bool nTFT, bool nPTR, string nWar3Path, string nCDKeyROC, st
 	m_ReconnectKey = 0;
 	m_NumEmptyActions = 0;
 	m_NumEmptyActionsUsed = 0;
+	m_LastMessageTick = 0;
+	m_LastMessage = "";
 	m_LastAckTime = 0;
 	m_LastActionTime = 0;
 	m_BNET = new CBNET( this, m_Server, string( ), 0, 0, m_CDKeyROC, m_CDKeyTFT, "USA", "United States", m_Username, m_Password, m_Channel, m_War3Version, nEXEVersion, nEXEVersionHash, nPasswordHashType, 200 );
@@ -1392,7 +1409,7 @@ bool CGProxy :: Update( long usecBlock )
 		//
 		// handle game listing
 		//
-
+		
 		if( GetTime( ) - m_LastRefreshTime >= 2 )
 		{
 			for( vector<CIncomingGameHost *> :: iterator i = m_Games.begin( ); i != m_Games.end( ); )
@@ -1417,11 +1434,9 @@ bool CGProxy :: Update( long usecBlock )
 				BYTEARRAY MapHeight = UTIL_CreateByteArray( (*i)->GetMapHeight( ), false );
 				string GameName = (*i)->GetGameName( );
 
-				// colour reliable game names so they're easier to pick out of the list
 
 				if( (*i)->GetMapWidth( ) == 1984 && (*i)->GetMapHeight( ) == 1984 )
 				{
-					GameName = "|cFF4080C0" + GameName;
 
 					// unfortunately we have to truncate them
 					// is this acceptable?
@@ -1429,9 +1444,13 @@ bool CGProxy :: Update( long usecBlock )
 					if( GameName.size( ) > 31 )
 						GameName = GameName.substr( 0, 31 );
 				}
-
-				m_UDPSocket->Broadcast( 6112, m_GameProtocol->SEND_W3GS_GAMEINFO( m_TFT, m_War3Version, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName( ), (*i)->GetElapsedTime( ), (*i)->GetMapPath( ), (*i)->GetMapCRC( ), 24, 24, m_Port, (*i)->GetUniqueGameID( ), (*i)->GetUniqueGameID( ) ) );
-				m_Bonjour->Broadcast_Info(m_TFT, m_War3Version, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName(), (*i)->GetElapsedTime(), (*i)->GetMapPath(), (*i)->GetMapCRC(), 24, 24, m_Port, (*i)->GetUniqueGameID(), (*i)->GetUniqueGameID(), (*i)->GetMapHash());
+				if (!m_LANBonjour)
+					m_UDPSocket->Broadcast(6112, m_GameProtocol->SEND_W3GS_GAMEINFO(m_TFT, m_LanVersion, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName(), (*i)->GetElapsedTime(), (*i)->GetMapPath(), (*i)->GetMapCRC(), 12, 12, m_Port, (*i)->GetUniqueGameID(), (*i)->GetUniqueGameID()));
+				else
+					if (m_LanVersion <= 30)
+						m_UDPSocket->Broadcast(6112, m_GameProtocol->SEND_W3GS_GAMEINFO(m_TFT, m_LanVersion, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName(), (*i)->GetElapsedTime(), (*i)->GetMapPath(), (*i)->GetMapCRC(), 24, 24, m_Port, (*i)->GetUniqueGameID(), (*i)->GetUniqueGameID()));
+					else
+						m_Bonjour->Broadcast_Info(m_TFT, m_LanVersion, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName(), (*i)->GetElapsedTime(), (*i)->GetMapPath(), (*i)->GetMapCRC(), 24, 24, m_Port, (*i)->GetUniqueGameID(), (*i)->GetUniqueGameID(), (*i)->GetMapHash());
 				i++;
 			}
 
@@ -1499,14 +1518,22 @@ void CGProxy :: ExtractLocalPackets( )
 									MessageString = string( Message.begin( ), Message.end( ) );
 								}
 
-								string Command = MessageString;
-								transform( Command.begin( ), Command.end( ), Command.begin( ), (int(*)(int))toupper );
+								if ( m_LastMessage == MessageString && GetTicks() - m_LastMessageTick <= 500)
+									MessageString = "";
+								else
+								{
+									m_LastMessage = MessageString;
+									m_LastMessageTick = GetTicks();
+								}
 
-								if( Command.size( ) >= 1 && Command.substr( 0, 1 ) == "/" )
+								string Command = MessageString;
+								transform( Command.begin( ), Command.end( ), Command.begin( ), (int(*)(int))tolower );
+
+								if( Command.size( ) >= 1 && Command.substr( 0, 1 ) == "@" )
 								{
 									Forward = false;
 
-									if( Command.size( ) >= 5 && Command.substr( 0, 4 ) == "/re " )
+									if( Command.size( ) >= 5 && Command.substr( 0, 4 ) == "@re " )
 									{
 										if( m_BNET->GetLoggedIn( ) )
 										{
@@ -1521,13 +1548,13 @@ void CGProxy :: ExtractLocalPackets( )
 										else
 											SendLocalChat( "You are not connected to battle.net." );
 									}
-									else if( Command == "/sc" || Command == "/spoof" || Command == "/spoofcheck" || Command == "/spoof check" )
+									else if( Command == "@sc" || Command == "@spoff" || Command == "@spoffcheck" || Command == "@spoff check" )
 									{
 										if( m_BNET->GetLoggedIn( ) )
 										{
 											if( !m_GameStarted )
 											{
-												m_BNET->QueueChatCommand( "spoofcheck", m_HostName, true );
+												m_BNET->QueueChatCommand("spoofcheck", m_HostName, true);
 												SendLocalChat( "Whispered to " + m_HostName + ": spoofcheck" );
 											}
 											else
@@ -1536,7 +1563,7 @@ void CGProxy :: ExtractLocalPackets( )
 										else
 											SendLocalChat( "You are not connected to battle.net." );
 									}
-									else if( Command == "/status" )
+									else if( Command == "@status" )
 									{
 										if( m_LocalSocket )
 										{
@@ -1551,13 +1578,13 @@ void CGProxy :: ExtractLocalPackets( )
 												SendLocalChat( "battle.net: Disconnected" );
 										}
 									}
-									else if( Command.size( ) >= 4 && Command.substr( 0, 3 ) == "/w " )
+									else if( Command.size( ) >= 4 && Command.substr( 0, 3 ) == "@w " )
 									{
 										if( m_BNET->GetLoggedIn( ) )
 										{
 											// todotodo: fix me
 
-											m_BNET->QueueChatCommand( MessageString );
+											m_BNET->QueueChatCommand("/" + MessageString.substr(1));
 											// SendLocalChat( "Whispered to ???: ???" );
 										}
 										else
@@ -1634,8 +1661,9 @@ void CGProxy :: ProcessLocalPackets( )
 					gLogFile = CFG.GetString( "log", string( ) );
 
 					uint32_t War3Version = CFG.GetInt( "war3version", War3Version );
+					uint32_t LanVersion = CFG.GetInt("lanversion", War3Version);
 
-					if(( Remainder.size( ) == 18 && War3Version <= 28 )||( Remainder.size( ) == 19 && War3Version >= 29 ))
+					if ((Remainder.size() == 18 && War3Version <= 28) || (Remainder.size() == 19 && (War3Version >= 29 || LanVersion >= 29)))
 					{
 						// lookup the game in the main list
 

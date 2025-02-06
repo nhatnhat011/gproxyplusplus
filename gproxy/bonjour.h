@@ -2,13 +2,16 @@
 #define BONJOUR_H
 
 #include "gproxy.h"
-#include "dns_sd.h"
+#include <dns_sd.h>
+#include <vector>
+#include <tuple>
 //
 // CBonjour
 //
 
 class CBonjour
 {
+	std::vector<std::tuple<DNSServiceRef, uint16_t, uint32_t, DNSRecordRef>> games;
 public:
 	DNSServiceRef client = NULL;
 	CBonjour();
