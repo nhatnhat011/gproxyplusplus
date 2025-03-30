@@ -88,7 +88,8 @@ public:
 		W3GS_MAPPARTOK			= 68,	// 0x44
 		W3GS_MAPPARTNOTOK		= 69,	// 0x45 - just a guess, received this packet after forgetting to send a crc in W3GS_MAPPART (f7 45 0a 00 01 02 01 00 00 00)
 		W3GS_PONG_TO_HOST		= 70,	// 0x46
-		W3GS_INCOMING_ACTION2	= 72	// 0x48 - received this packet when there are too many actions to fit in W3GS_INCOMING_ACTION
+		W3GS_INCOMING_ACTION2	= 72,	// 0x48 - received this packet when there are too many actions to fit in W3GS_INCOMING_ACTION
+		W3GS_REFORGED_UNKNOWN   = 89	// 0x59 // test 2/2/2025
 	};
 
 	CGameProtocol( CGProxy *nGProxy );

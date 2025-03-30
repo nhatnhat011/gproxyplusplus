@@ -118,7 +118,6 @@ public:
 	string m_Channel;
 	uint32_t m_War3Version;
 	uint32_t m_LanVersion;
-	bool m_LANBonjour;
 	uint16_t m_Port;
 	uint32_t m_LastConnectionAttemptTime;
 	uint32_t m_LastRefreshTime;
@@ -142,7 +141,7 @@ public:
 	string m_JoinedName;
 	string m_HostName;
 
-	CGProxy( bool nTFT, bool nPTR, string nWar3Path, string nCDKeyROC, string nCDKeyTFT, string nServer, string nUsername, string nPassword, string nChannel, uint32_t nWar3Version, uint32_t nLanVersion, bool nBonjour, uint16_t nPort, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType );
+	CGProxy( bool nTFT, bool nPTR, string nWar3Path, string nCDKeyROC, string nCDKeyTFT, string nServer, string nUsername, string nPassword, string nChannel, uint32_t nWar3Version, uint32_t nLanVersion, uint16_t nPort, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType );
 	~CGProxy( );
 
 	// processing functions

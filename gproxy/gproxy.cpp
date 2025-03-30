@@ -323,7 +323,6 @@ int main( int argc, char **argv )
 	string Channel;
 	uint32_t War3Version = 31;
 	uint32_t LanVersion;
-	bool Bonjour = false;
 	uint16_t Port = 6125;
 	BYTEARRAY EXEVersion;
 	BYTEARRAY EXEVersionHash;
@@ -573,13 +572,6 @@ int main( int argc, char **argv )
 				out << "war3version = " << War3Version << endl;
 				out << "lanversion = " << War3Version << endl;
 			}
-			if( CFG.GetInt( "lanversion", War3Version ) >= 31 )
-			{
-				out << "bonjour = 1" << endl;
-			} else
-			{
-				out << "bonjour = 0" << endl;
-			}
 			out << "port = " << Port << endl;
 			if( Server == "server.eurobattle.net" )
 			{
@@ -614,7 +606,6 @@ int main( int argc, char **argv )
 		Channel = CFG.GetString( "channel", string( ) );
 		War3Version = CFG.GetInt( "war3version", War3Version );
 		LanVersion = CFG.GetInt( "lanversion", War3Version );
-		Bonjour = CFG.GetInt("bonjour", 0) != 0;
 		Port = CFG.GetInt( "port", Port );
 		ptr = CFG.GetInt("ptr", 0) != 0;
 		EXEVersion = UTIL_ExtractNumbers( CFG.GetString( "exeversion", string( ) ), 4 );
@@ -660,7 +651,7 @@ int main( int argc, char **argv )
 
 	// initialize gproxy
 
-	gGProxy = new CGProxy( !CDKeyTFT.empty( ), ptr, War3Path, CDKeyROC, CDKeyTFT, Server, Username, Password, Channel, War3Version, LanVersion, Bonjour, Port, EXEVersion, EXEVersionHash, PasswordHashType );
+	gGProxy = new CGProxy( !CDKeyTFT.empty( ), ptr, War3Path, CDKeyROC, CDKeyTFT, Server, Username, Password, Channel, War3Version, LanVersion, Port, EXEVersion, EXEVersionHash, PasswordHashType );
 
 	
 	struct timeval currTime;
@@ -732,6 +723,7 @@ int main( int argc, char **argv )
 					CONSOLE_Print("   /publicoff          : disable listing of public games", false);
 					CONSOLE_Print("   /r <message>        : reply to the last received whisper", false);
 					CONSOLE_Print("   /start              : start warcraft 3", false);
+					CONSOLE_Print("   /lanversion      : Set warcraft 3 version for LAN game", false);
 					CONSOLE_Print("   /version            : show version text", false);
 					CONSOLE_Print("", false);
 					CONSOLE_Print("  In game:", false);
@@ -770,6 +762,16 @@ int main( int argc, char **argv )
 						gGProxy->m_BNET->SetSearchGameName(GameName);
 						CONSOLE_Print("[BNET] looking for a game named \"" + GameName + "\" for up to two minutes");
 					}
+				}
+				else if (Command == "/lanversion")
+				{
+					CONSOLE_Print("[GProxy] Warcraft II version for LAN game: " + UTIL_ToString(gGProxy->m_LanVersion));
+				}
+				else if (Command.size() >= 14 && Command.substr(0, 12) == "/lanversion ")
+				{
+					uint32_t SetLanversion = UTIL_ToUInt32(gInputBuffer.substr(12));
+					gGProxy->m_LanVersion = SetLanversion;
+					CONSOLE_Print("[GProxy] Warcraft II version for LAN game: " + UTIL_ToString(SetLanversion));
 				}
 				else if (Command == "/help")
 				{
@@ -969,7 +971,7 @@ int main( int argc, char **argv )
 // CGProxy
 //
 
-CGProxy :: CGProxy( bool nTFT, bool nPTR, string nWar3Path, string nCDKeyROC, string nCDKeyTFT, string nServer, string nUsername, string nPassword, string nChannel, uint32_t nWar3Version, uint32_t nLanVersion, bool nBonjour, uint16_t nPort, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType )
+CGProxy :: CGProxy( bool nTFT, bool nPTR, string nWar3Path, string nCDKeyROC, string nCDKeyTFT, string nServer, string nUsername, string nPassword, string nChannel, uint32_t nWar3Version, uint32_t nLanVersion, uint16_t nPort, BYTEARRAY nEXEVersion, BYTEARRAY nEXEVersionHash, string nPasswordHashType )
 {
 	m_Version = "Public Test Release 1.1 (March 31, 2021)";
 	m_LocalServer = new CTCPServer( );
@@ -995,7 +997,6 @@ CGProxy :: CGProxy( bool nTFT, bool nPTR, string nWar3Path, string nCDKeyROC, st
 	m_Channel = nChannel;
 	m_War3Version = nWar3Version;
 	m_LanVersion = nLanVersion;
-	m_LANBonjour = nBonjour;
 	m_Port = nPort;
 	m_LastConnectionAttemptTime = 0;
 	m_LastRefreshTime = 0;
@@ -1444,13 +1445,12 @@ bool CGProxy :: Update( long usecBlock )
 					if( GameName.size( ) > 31 )
 						GameName = GameName.substr( 0, 31 );
 				}
-				if (!m_LANBonjour)
-					m_UDPSocket->Broadcast(6112, m_GameProtocol->SEND_W3GS_GAMEINFO(m_TFT, m_LanVersion, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName(), (*i)->GetElapsedTime(), (*i)->GetMapPath(), (*i)->GetMapCRC(), 12, 12, m_Port, (*i)->GetUniqueGameID(), (*i)->GetUniqueGameID()));
+				if (m_LanVersion > 30)
+					m_Bonjour->Broadcast_Info(m_TFT, m_LanVersion, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName(), (*i)->GetElapsedTime(), (*i)->GetMapPath(), (*i)->GetMapCRC(), 24, 24, m_Port, (*i)->GetUniqueGameID(), (*i)->GetUniqueGameID(), (*i)->GetMapHash());
+				else if (m_LanVersion >= 29)
+					m_UDPSocket->Broadcast(6112, m_GameProtocol->SEND_W3GS_GAMEINFO(m_TFT, m_LanVersion, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName(), (*i)->GetElapsedTime(), (*i)->GetMapPath(), (*i)->GetMapCRC(), 24, 24, m_Port, (*i)->GetUniqueGameID(), (*i)->GetUniqueGameID()));
 				else
-					if (m_LanVersion <= 30)
-						m_UDPSocket->Broadcast(6112, m_GameProtocol->SEND_W3GS_GAMEINFO(m_TFT, m_LanVersion, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName(), (*i)->GetElapsedTime(), (*i)->GetMapPath(), (*i)->GetMapCRC(), 24, 24, m_Port, (*i)->GetUniqueGameID(), (*i)->GetUniqueGameID()));
-					else
-						m_Bonjour->Broadcast_Info(m_TFT, m_LanVersion, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName(), (*i)->GetElapsedTime(), (*i)->GetMapPath(), (*i)->GetMapCRC(), 24, 24, m_Port, (*i)->GetUniqueGameID(), (*i)->GetUniqueGameID(), (*i)->GetMapHash());
+					m_UDPSocket->Broadcast(6112, m_GameProtocol->SEND_W3GS_GAMEINFO(m_TFT, m_LanVersion, MapGameType, MapFlags, MapWidth, MapHeight, GameName, (*i)->GetHostName(), (*i)->GetElapsedTime(), (*i)->GetMapPath(), (*i)->GetMapCRC(), 12, 12, m_Port, (*i)->GetUniqueGameID(), (*i)->GetUniqueGameID()));
 				i++;
 			}
 
