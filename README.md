@@ -48,7 +48,6 @@ Full list of configuration keys:
 - `password`		your battle.net/PVPGN password
 - `channel`			the first channel to join after logging into battle.net/PVPGN
 - `war3version`		the Warcraft III version to connect to battle.net/PVPGN with
-- `bonjour`     1 if Warcraft version using bonjour
 - `lanversion`  the Warcraft III version tto connect to LAN Game (Reforged = 100)
 - `port`			  the port GProxy++ should listen for the local player on
 - `exeversion`		used with PVPGN servers
@@ -80,6 +79,7 @@ In the GProxy++ console:
 - `/publicoff`		disable listing of public games (also: /public off, /listoff, /list off)
 - `/r <message>`		reply to the last received whisper
 - `/start`			start Warcraft III
+- `/lanversion`			set Warcraft III LAN Game version
 - `/version`		show version text
 
 In game:
